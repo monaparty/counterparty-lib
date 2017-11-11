@@ -32,8 +32,8 @@ RUN chmod a+x /usr/local/bin/start.sh
 WORKDIR /
 
 # Pull the mainnet and testnet DB boostraps
-RUN counterparty-server bootstrap --quiet
-RUN counterparty-server --testnet bootstrap --quiet
+#RUN counterparty-server bootstrap --quiet
+#RUN counterparty-server --testnet bootstrap --quiet
 
 EXPOSE 4000 14000
 
