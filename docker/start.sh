@@ -19,6 +19,8 @@ if [ ! -f /root/.local/share/counterparty/monaparty.testnet.db ]; then
     counterparty-server --testnet bootstrap --quiet
 fi
 
+counterparty-server ${PARAMS} reparse
+
 # Kick off the server, defaulting to the "start" subcommand
 # Launch utilizing the SIGTERM/SIGINT propagation pattern from
 # http://veithen.github.io/2014/11/16/sigterm-propagation.html
