@@ -6,8 +6,8 @@ UNIT = 100000000        # The same across assets.
 
 # Versions
 VERSION_MAJOR = 9
-VERSION_MINOR = 55
-VERSION_REVISION = 3
+VERSION_MINOR = 5500
+VERSION_REVISION = 300
 VERSION_STRING = str(VERSION_MAJOR) + '.' + str(VERSION_MINOR) + '.' + str(VERSION_REVISION)
 
 
@@ -16,7 +16,7 @@ TXTYPE_FORMAT = '>I'
 SHORT_TXTYPE_FORMAT = 'B'
 
 TWO_WEEKS = 2 * 7 * 24 * 3600
-MAX_EXPIRATION = 4 * 2016   # Two months
+MAX_EXPIRATION = 4 * 20160   # Two months
 
 MEMPOOL_BLOCK_HASH = 'mempool'
 MEMPOOL_BLOCK_INDEX = 9999999
@@ -46,46 +46,47 @@ DEFAULT_BACKEND_PORT = 9402
 DEFAULT_BACKEND_PORT_TESTNET_BTCD = 18334
 DEFAULT_BACKEND_PORT_BTCD = 8334
 
-UNSPENDABLE_TESTNET = 'mvCounterpartyXXXXXXXXXXXXXXW24Hef'
+UNSPENDABLE_TESTNET = 'msVB7uMdzAwgQuph5pL8Zb7aiYgjYoFH1q'
 UNSPENDABLE_MAINNET = 'MMonapartyMMMMMMMMMMMMMMMMMMMUzGgh'
 
 ADDRESSVERSION_TESTNET = b'\x6f'
-P2SH_ADDRESSVERSION_TESTNET = b'\xc4'
+P2SH_ADDRESSVERSION_TESTNET = b'\x75'
 PRIVATEKEY_VERSION_TESTNET = b'\xef'
-ADDRESSVERSION_MAINNET = b'\x00'
-P2SH_ADDRESSVERSION_MAINNET = b'\x05'
-PRIVATEKEY_VERSION_MAINNET = b'\x80'
-MAGIC_BYTES_TESTNET = b'\xfa\xbf\xb5\xda'   # For bip-0010
-MAGIC_BYTES_MAINNET = b'\xf9\xbe\xb4\xd9'   # For bip-0010
+ADDRESSVERSION_MAINNET = b'\x32'
+P2SH_ADDRESSVERSION_MAINNET = b'\x37'
+PRIVATEKEY_VERSION_MAINNET = b'\xb2'
+MAGIC_BYTES_TESTNET = b'\xfd\xd2\xc8\xf1'   # For bip-0010
+MAGIC_BYTES_MAINNET = b'\xfb\xc0\xb6\xdb'   # For bip-0010
 
-BLOCK_FIRST_TESTNET_TESTCOIN = 310000
-BURN_START_TESTNET_TESTCOIN = 310000
-BURN_END_TESTNET_TESTCOIN = 4017708     # Fifty years, at ten minutes per block.
+BLOCK_FIRST_TESTNET_TESTCOIN = 79400
+BURN_START_TESTNET_TESTCOIN = 79400
+BURN_END_TESTNET_TESTCOIN = 1150000      # A long time.
 
-BLOCK_FIRST_TESTNET = 310000
+BLOCK_FIRST_TESTNET = 79400
 BLOCK_FIRST_TESTNET_HASH = '000000001f605ec6ee8d2c0d21bf3d3ded0a31ca837acc98893876213828989d'
-BURN_START_TESTNET = 310000
-BURN_END_TESTNET = 4017708              # Fifty years, at ten minutes per block.
+BURN_START_TESTNET = 79400
+BURN_END_TESTNET = 1150000               # A long time.
 
-BLOCK_FIRST_MAINNET_TESTCOIN = 278270
-BURN_START_MAINNET_TESTCOIN = 278310
-BURN_END_MAINNET_TESTCOIN = 2500000     # A long time.
+BLOCK_FIRST_MAINNET_TESTCOIN = 1158585
+BURN_START_MAINNET_TESTCOIN = 1166000
+BURN_END_MAINNET_TESTCOIN = 11500000     # A long time.
 
-BLOCK_FIRST_MAINNET = 278270
-BLOCK_FIRST_MAINNET_HASH = '00000000000000017bac9a8e85660ad348050c789922d5f8fe544d473368be1a'
-BURN_START_MAINNET = 278310
-BURN_END_MAINNET = 283810
+BLOCK_FIRST_MAINNET = 1158585
+BLOCK_FIRST_MAINNET_HASH = '8d347ca2677f41f863bab03d28e13ceed52c6618fba29e6ea3a9e3cf2d190618'
+BURN_START_MAINNET = 1166000
+BURN_END_MAINNET = 1179440
 
+BURN_LIMIT = 3900
 
 # Protocol defaults
 # NOTE: If the DUST_SIZE constants are changed, they MUST also be changed in counterblockd/lib/config.py as well
     # TODO: This should be updated, given their new configurability.
 # TODO: The dust values should be lowered by 90%, once transactions with smaller outputs start confirming faster: <https://github.com/mastercoin-MSC/spec/issues/192>
-DEFAULT_REGULAR_DUST_SIZE = 5430         # TODO: This is just a guess. I got it down to 5530 satoshis.
-DEFAULT_MULTISIG_DUST_SIZE = 7800        # <https://bitcointalk.org/index.php?topic=528023.msg7469941#msg7469941>
+DEFAULT_REGULAR_DUST_SIZE = 54600         # TODO: This is just a guess. I got it down to 5530 satoshis.
+DEFAULT_MULTISIG_DUST_SIZE = 78000        # <https://bitcointalk.org/index.php?topic=528023.msg7469941#msg7469941>
 DEFAULT_OP_RETURN_VALUE = 0
-DEFAULT_FEE_PER_KB = 25000               # sane/low default, also used as minimum when estimated fee is used
-ESTIMATE_FEE_PER_KB = True               # when True will use `estimatefee` from bitcoind instead of DEFAULT_FEE_PER_KB
+DEFAULT_FEE_PER_KB = 100000              # sane/low default, also used as minimum when estimated fee is used
+ESTIMATE_FEE_PER_KB = False              # when True will use `estimatefee` from bitcoind instead of DEFAULT_FEE_PER_KB
 ESTIMATE_FEE_NBLOCKS = 3
 
 # UI defaults

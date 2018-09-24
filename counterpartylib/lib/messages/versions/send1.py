@@ -20,10 +20,10 @@ def unpack(db, message, block_index):
         asset = util.get_asset_name(db, asset_id, block_index)
 
     except struct.error:
-        raise UnpackError('could not unpack')
+        raise exceptions.UnpackError('could not unpack')
 
     except AssetNameError:
-        raise UnpackError('asset id invalid')
+        raise exceptions.UnpackError('asset id invalid')
 
     unpacked = {
                 'asset': asset,
@@ -61,6 +61,20 @@ def validate (db, source, destination, asset, quantity, block_index):
             if result and result['options'] & config.ADDRESS_OPTION_REQUIRE_MEMO:
                 problems.append('destination requires memo')
         cursor.close()
+
+    if util.enabled('non_reassignable_assets') and asset != config.BTC and asset != config.XCP:
+        cursor = db.cursor()
+        try:
+            # verify not senging non-reassignable asset
+            issuances = list(cursor.execute('''SELECT * FROM issuances
+                                               WHERE asset = ? AND status = ? ORDER BY tx_index DESC LIMIT 1''',
+                                                   (asset, 'valid')))
+            if not issuances:
+               problems.append('issuance not found (system error?)')
+            elif not issuances[0]['reassignable'] and issuances[0]['issuer'] != source and issuances[0]['issuer'] != destination:
+               problems.append('non-reassignable asset')
+        finally:
+            cursor.close()
 
     return problems
 
