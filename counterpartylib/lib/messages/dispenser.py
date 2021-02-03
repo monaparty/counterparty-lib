@@ -157,7 +157,7 @@ def parse (db, tx, message):
         assetid, give_quantity, escrow_quantity, mainchainrate, dispenser_status = struct.unpack(FORMAT, message)
         asset = util.generate_asset_name(assetid, util.CURRENT_BLOCK_INDEX)
         status = 'valid'
-    except (exceptions.UnpackError, struct.error) as e:
+    except (exceptions.UnpackError, struct.error):
         assetid, give_quantity, mainchainrate, asset = None, None, None, None
         status = 'invalid: could not unpack'
 

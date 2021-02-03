@@ -295,7 +295,7 @@ def adjust_get_sends_memo_filters(filters):
             filter_['field'] = 'memo'
             try:
                 filter_['value'] = bytes.fromhex(filter_['value'])
-            except ValueError as e:
+            except ValueError:
                 raise APIError("Invalid memo_hex value")
 
 def adjust_get_sends_results(query_result):
@@ -507,6 +507,7 @@ class APIServer(threading.Thread):
 
         @auth.get_password
         def get_pw(username):
+            #pylint: disable=unused-variable
             if username == config.RPC_USER:
                 return config.RPC_PASSWORD
             return None
@@ -530,6 +531,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def sql(query, bindings=None):
+            #pylint: disable=unused-variable
             if bindings == None:
                 bindings = []
             return db_query(self.db, query, tuple(bindings))
@@ -556,7 +558,7 @@ class APIServer(threading.Thread):
 
             def create_method(**kwargs):
                 try:
-                    transaction_args, common_args, private_key_wif = split_params(**kwargs)
+                    transaction_args, common_args, _ = split_params(**kwargs)
                     return compose_transaction(self.db, name=tx, params=transaction_args, **common_args)
                 except (TypeError, script.AddressError, exceptions.ComposeError, exceptions.TransactionError, exceptions.BalanceError) as error:
                     # TypeError happens when unexpected keyword arguments are passed in
@@ -574,6 +576,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_messages(block_index):
+            #pylint: disable=unused-variable
             if not isinstance(block_index, int):
                 raise APIError("block_index must be an integer.")
 
@@ -585,6 +588,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_messages_by_index(message_indexes):
+            #pylint: disable=unused-variable
             """Get specific messages from the feed, based on the message_index.
 
             @param message_index: A single index, or a list of one or more message indexes to retrieve.
@@ -604,6 +608,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_supply(asset):
+            #pylint: disable=unused-variable
             if asset == config.BTC:
                 return  backend.get_btc_supply(normalize=False)
             elif asset == config.XCP:
@@ -614,11 +619,13 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_xcp_supply():
+            #pylint: disable=unused-variable
             logger.warning("Deprecated method: `get_xcp_supply`")
             return util.xcp_supply(self.db)
 
         @dispatcher.add_method
         def get_asset_info(assets):
+            #pylint: disable=unused-variable
             logger.warning("Deprecated method: `get_asset_info`")
             if not isinstance(assets, list):
                 raise APIError("assets must be a list of asset names, even if it just contains one entry")
@@ -675,6 +682,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_block_info(block_index):
+            #pylint: disable=unused-variable
             assert isinstance(block_index, int)
             cursor = self.db.cursor()
             cursor.execute('''SELECT * FROM blocks WHERE block_index = ?''', (block_index,))
@@ -690,10 +698,12 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def fee_per_kb(conf_target=config.ESTIMATE_FEE_CONF_TARGET, mode=config.ESTIMATE_FEE_MODE):
+            #pylint: disable=unused-variable
             return backend.fee_per_kb(conf_target, mode)
 
         @dispatcher.add_method
         def get_blocks(block_indexes, min_message_index=None):
+            #pylint: disable=unused-variable
             """fetches block info and messages for the specified block indexes
             @param min_message_index: Retrieve blocks from the message feed on or after this specific message index
               (useful since blocks may appear in the message feed more than once, if a reorg occurred). Note that
@@ -733,6 +743,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_running_info():
+            #pylint: disable=unused-variable
             latestBlockIndex = backend.getblockcount()
 
             try:
@@ -783,6 +794,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_element_counts():
+            #pylint: disable=unused-variable
             counts = {}
             cursor = self.db.cursor()
             for element in ['transactions', 'blocks', 'debits', 'credits', 'balances', 'sends', 'orders',
@@ -798,6 +810,7 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_asset_names(longnames=False):
+            #pylint: disable=unused-variable
             cursor = self.db.cursor()
             if longnames:
                 names = []
@@ -810,10 +823,12 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_asset_longnames():
+            #pylint: disable=unused-variable
             return get_asset_names(longnames=True)
 
         @dispatcher.add_method
         def get_holder_count(asset):
+            #pylint: disable=unused-variable
             asset = util.resolve_subasset_longname(self.db, asset)
             holders = util.holders(self.db, asset, True)
             addresses = []
@@ -823,16 +838,19 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def get_holders(asset):
+            #pylint: disable=unused-variable
             asset = util.resolve_subasset_longname(self.db, asset)
             holders = util.holders(self.db, asset, True)
             return holders
 
         @dispatcher.add_method
         def search_raw_transactions(address, unconfirmed=True):
+            #pylint: disable=unused-variable
             return backend.search_raw_transactions(address, unconfirmed=unconfirmed)
 
         @dispatcher.add_method
         def get_unspent_txouts(address, unconfirmed=False, unspent_tx_hash=None, order_by=None):
+            #pylint: disable=unused-variable
             results = backend.get_unspent_txouts(address, unconfirmed=unconfirmed, unspent_tx_hash=unspent_tx_hash)
             if order_by is None:
                 return results
@@ -847,20 +865,24 @@ class APIServer(threading.Thread):
 
         @dispatcher.add_method
         def getrawtransaction(tx_hash, verbose=False, skip_missing=False):
+            #pylint: disable=unused-variable
             return backend.getrawtransaction(tx_hash, verbose=verbose, skip_missing=skip_missing)
 
         @dispatcher.add_method
         def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False):
+            #pylint: disable=unused-variable
             return backend.getrawtransaction_batch(txhash_list, verbose=verbose, skip_missing=skip_missing)
 
         @dispatcher.add_method
         def get_tx_info(tx_hex, block_index=None):
+            #pylint: disable=unused-variable
             # block_index mandatory for transactions before block 335000
             source, destination, btc_amount, fee, data, extra = blocks.get_tx_info(tx_hex, block_index=block_index)
             return source, destination, btc_amount, fee, util.hexlify(data) if data else ''
 
         @dispatcher.add_method
         def unpack(data_hex):
+            #pylint: disable=unused-variable
             data = binascii.unhexlify(data_hex)
             message_type_id, message = message_type.unpack(data)
 
@@ -877,6 +899,7 @@ class APIServer(threading.Thread):
         @dispatcher.add_method
         # TODO: Rename this method.
         def search_pubkey(pubkeyhash, provided_pubkeys=None):
+            #pylint: disable=unused-variable
             return backend.pubkeyhash_to_pubkey(pubkeyhash, provided_pubkeys=provided_pubkeys)
 
         def _set_cors_headers(response):
@@ -887,6 +910,7 @@ class APIServer(threading.Thread):
 
         @app.route('/healthz', methods=['GET'])
         def handle_healthz():
+            #pylint: disable=unused-variable
             msg, code = 'Healthy', 200
             try:
                 latestBlockIndex = backend.getblockcount()
@@ -900,6 +924,7 @@ class APIServer(threading.Thread):
         # Only require authentication if RPC_PASSWORD is set.
         @conditional_decorator(auth.login_required, hasattr(config, 'RPC_PASSWORD'))
         def handle_root(args_path):
+            #pylint: disable=unused-variable
             """Handle all paths, decide where to forward the query."""
             if args_path == '' or args_path.startswith('api/') or args_path.startswith('API/') or \
                args_path.startswith('rpc/') or args_path.startswith('RPC/'):

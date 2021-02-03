@@ -23,7 +23,7 @@ def pack(address):
                 raise Exception('p2wsh still not supported for sending')
             else:
                 raise Exception('unexpected length for segwit')
-        except Exception as ne:
+        except Exception:
             try:
                 short_address_bytes = bitcoin.base58.decode(address)[:-4]
                 return short_address_bytes

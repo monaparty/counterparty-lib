@@ -159,7 +159,7 @@ def _decode_decodeLUT(data):
     addressList = []
     bytesPerAddress = 21
 
-    for i in range(0, numAddresses):
+    for _ in range(0, numAddresses):
         addr_raw = data[p:p+bytesPerAddress]
 
         addressList.append(address.unpack(addr_raw))
@@ -180,7 +180,7 @@ def _decode_decodeSendList(stream, nbits, lut, block_index):
         rangeLimit = numRecipients
     sendList = []
     asset = util.generate_asset_name(asset_id, block_index)
-    for i in range(0, rangeLimit):
+    for _ in range(0, rangeLimit):
         if nbits > 0:
             idx = stream.read('uint:%i' % nbits)
         else:
