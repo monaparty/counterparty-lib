@@ -360,7 +360,7 @@ def validate (db, source, give_asset, give_quantity, get_asset, get_quantity, ex
         problems.append('zero give or zero get')
 
     cursor.execute('SELECT * FROM issuances WHERE (status = ? AND asset = ?) ORDER BY tx_index DESC LIMIT 1', ('valid', give_asset))
-    valid_give_asset = cursor.fetchone();
+    valid_give_asset = cursor.fetchone()
     if give_asset not in (config.BTC, config.XCP):
         if not valid_give_asset:
             problems.append('no such asset to give ({})'.format(give_asset))
