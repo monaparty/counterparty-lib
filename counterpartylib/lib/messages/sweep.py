@@ -203,9 +203,10 @@ def parse (db, tx, message):
                             'asset_longname': last_issuance['asset_longname'],
                             'listed': last_issuance['listed'],
                             'reassignable': last_issuance['reassignable'],
-                            'vendable': last_issuance['vendable']
+                            'vendable': last_issuance['vendable'],
+                            'fungible': last_issuance['fungible']
                         }
-                        sql='insert into issuances values(:tx_index, :tx_hash, :msg_index, :block_index, :asset, :quantity, :divisible, :source, :issuer, :transfer, :callable, :call_date, :call_price, :description, :fee_paid, :locked, :status, :asset_longname, :listed, :reassignable, :vendable)'
+                        sql='insert into issuances values(:tx_index, :tx_hash, :msg_index, :block_index, :asset, :quantity, :divisible, :source, :issuer, :transfer, :callable, :call_date, :call_price, :description, :fee_paid, :locked, :status, :asset_longname, :listed, :reassignable, :vendable, :fungible)'
                         cursor.execute(sql, bindings)
                         sweep_pos += 1
 

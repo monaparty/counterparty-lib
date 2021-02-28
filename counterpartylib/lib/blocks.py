@@ -350,7 +350,8 @@ def initialise(db):
                       asset_id TEXT UNIQUE,
                       asset_name TEXT UNIQUE,
                       block_index INTEGER,
-                      asset_longname TEXT)
+                      asset_longname TEXT,
+                      asset_group TEXT)
                    ''')
     cursor.execute('''CREATE INDEX IF NOT EXISTS
                       name_idx ON assets (asset_name)
@@ -359,17 +360,20 @@ def initialise(db):
                       id_idx ON assets (asset_id)
                    ''')
 
-    # Add asset_longname for sub-assets
+    # Add asset_longname for sub-assets and asset_group for non-fungible.
     #   SQLite can’t do `ALTER TABLE IF COLUMN NOT EXISTS`.
     columns = [column['name'] for column in cursor.execute('''PRAGMA table_info(assets)''')]
     if 'asset_longname' not in columns:
         cursor.execute('''ALTER TABLE assets ADD COLUMN asset_longname TEXT''')
     cursor.execute('''CREATE UNIQUE INDEX IF NOT EXISTS asset_longname_idx ON assets(asset_longname)''')
+    if 'asset_group' not in columns:
+        cursor.execute('''ALTER TABLE assets ADD COLUMN asset_group TEXT''')
+    cursor.execute('''CREATE INDEX IF NOT EXISTS asset_group_idx ON assets(asset_group)''')
 
     cursor.execute('''SELECT * FROM assets WHERE asset_name = ?''', (config.BTC,))
     if not list(cursor):
-        cursor.execute('''INSERT INTO assets VALUES (?,?,?,?)''', ('0', config.BTC, None, None))
-        cursor.execute('''INSERT INTO assets VALUES (?,?,?,?)''', ('1', config.XCP, None, None))
+        cursor.execute('''INSERT INTO assets VALUES (?,?,?,?,?)''', ('0', config.BTC, None, None, None))
+        cursor.execute('''INSERT INTO assets VALUES (?,?,?,?,?)''', ('1', config.XCP, None, None, None))
 
     # Addresses
     # Leaving this here because in the future this could work for other things besides broadcast
