@@ -263,11 +263,11 @@ def parse (db, tx, message):
         total_escrow = bet_match['forward_quantity'] + bet_match['backward_quantity']
 
         if util.enabled('inmutable_fee_fraction'):
-            fee_fraction = bet_match['fee_fraction_int'] / config.UNIT
+            fee_fraction = bet_match['fee_fraction_int']
         else:
-            fee_fraction = fee_fraction_int / config.UNIT
+            fee_fraction = fee_fraction_int
 
-        fee = int(fee_fraction * total_escrow)              # Truncate.
+        fee = int(fee_fraction * total_escrow / config.UNIT)              # Truncate.
         escrow_less_fee = total_escrow - fee
 
         # Get known bet match type IDs.

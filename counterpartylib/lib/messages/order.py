@@ -448,9 +448,9 @@ def parse (db, tx, message):
         if problems: status = 'invalid: ' + '; '.join(problems)
 
         if util.enabled('btc_order_minimum'):
-            min_btc_quantity = 0.001 * config.UNIT  # 0.001 BTC
+            min_btc_quantity = int(0.001 * config.UNIT)  # 0.001 BTC
             if util.enabled('btc_order_minimum_adjustment_1'):
-                min_btc_quantity = 0.00001 * config.UNIT  # 0.00001 BTC
+                min_btc_quantity = int(0.00001 * config.UNIT)  # 0.00001 BTC
             if (give_asset == config.BTC and give_quantity < min_btc_quantity) or (get_asset == config.BTC and get_quantity < min_btc_quantity):
                 if problems:
                     status += '; btc order below minimum'
@@ -606,7 +606,7 @@ def match (db, tx, block_index=None):
             forward_asset, backward_asset = tx1['get_asset'], tx1['give_asset']
 
             if block_index >= 313900 or config.TESTNET or config.REGTEST: # Protocol change.
-                min_btc_quantity = 0.001 * config.UNIT  # 0.001 BTC
+                min_btc_quantity = int(0.001 * config.UNIT)  # 0.001 BTC
                 if (forward_asset == config.BTC and forward_quantity <= min_btc_quantity) or (backward_asset == config.BTC and backward_quantity <= min_btc_quantity):
                     logger.debug('Skipping: below minimum {} quantity'.format(config.BTC))
                     continue

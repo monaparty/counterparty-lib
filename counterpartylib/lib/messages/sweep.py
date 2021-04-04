@@ -16,8 +16,8 @@ FORMAT = '>21sB'
 LENGTH = 22
 MAX_MEMO_LENGTH = 34 # Could be higher, but we will keep it consistent with enhanced send
 ID = 4
-ANTISPAM_FEE_DECIMAL = 0.5
-ANTISPAM_FEE = ANTISPAM_FEE_DECIMAL * config.UNIT
+ANTISPAM_FEE_FLOAT = 0.5
+ANTISPAM_FEE = int(ANTISPAM_FEE_FLOAT * config.UNIT)
 
 FLAG_BALANCES = 1
 FLAG_OWNERSHIP = 2
@@ -67,9 +67,9 @@ def validate (db, source, destination, flags, memo_bytes, block_index):
     result = cursor.fetchall()
 
     if len(result) == 0:
-        problems.append('insufficient XMP balance for sweep. Need %s XMP for antispam fee' % ANTISPAM_FEE_DECIMAL)
+        problems.append('insufficient XMP balance for sweep. Need %s XMP for antispam fee' % ANTISPAM_FEE_FLOAT)
     elif result[0]['quantity'] < ANTISPAM_FEE:
-        problems.append('insufficient XMP balance for sweep. Need %s XMP for antispam fee' % ANTISPAM_FEE_DECIMAL)
+        problems.append('insufficient XMP balance for sweep. Need %s XMP for antispam fee' % ANTISPAM_FEE_FLOAT)
 
     cursor.close()
 

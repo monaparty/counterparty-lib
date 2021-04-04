@@ -99,11 +99,12 @@ def parse (db, tx, MAINNET_BURNS, message=None):
 
             total_time = config.BURN_END - config.BURN_START
             partial_time = config.BURN_END - tx['block_index']
-            multiplier = (1000 + (500 * Fraction(partial_time, total_time)))
+            multiplier = 1000 + 500 * Fraction(partial_time, total_time)
             earned = round(burned * multiplier)
 
             # Monaparty's "BIG BURN".
-            if tx['block_index'] == 1158694: earned = round(1500 * 46061.5384615 * 3.9517 * config.UNIT)
+            if tx['block_index'] == 1158694:
+                earned = round(D('1500') * D('46061.5384615') * D('3.9517') * D(str(config.UNIT)))
 
             # Credit source address with earned XCP.
             util.credit(db, tx['source'], config.XCP, earned, action='burn', event=tx['tx_hash'])

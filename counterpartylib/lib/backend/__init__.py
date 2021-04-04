@@ -153,16 +153,16 @@ def get_btc_supply(normalize=False):
     block_count = getblockcount()
     blocks_remaining = block_count
     total_supply = 0
-    reward = 50.0
+    reward = 50 * config.UNIT
     while blocks_remaining > 0:
         if blocks_remaining >= 210000:
             blocks_remaining -= 210000
             total_supply += 210000 * reward
             reward /= 2
         else:
-            total_supply += (blocks_remaining * reward)
+            total_supply += blocks_remaining * reward
             blocks_remaining = 0
-    return total_supply if normalize else int(total_supply * config.UNIT)
+    return total_supply if normalize else total_supply
 
 class MempoolError(Exception):
     pass
