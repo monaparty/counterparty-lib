@@ -17,14 +17,15 @@ def pack(address):
             witprog = bech32.to_bytes()
             if not (0 <= bech32.witver <= 16):
                 raise Exception('impossible witness version')
-            if bech32.witver != 0:
-                raise Exception('supported witness version 0 only for sending')
-            if len(witprog) == 20:
-                return b''.join([witver, witprog])
-            elif len(witprog) == 32:
-                raise Exception('p2wsh still not supported for sending')
+            if bech32.witver == 0:
+                if len(witprog) == 20:
+                    return b''.join([witver, witprog])
+                elif len(witprog) == 32:
+                    raise Exception('p2wsh still not supported for sending')
+                else:
+                    raise Exception('unexpected length for segwit')
             else:
-                raise Exception('unexpected length for segwit')
+                raise Exception('unsupported witness version for sending')
         except Exception as ne:
             try:
                 short_address_bytes = bitcoin.base58.decode(address)[:-4]
