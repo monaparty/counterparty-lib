@@ -51,7 +51,7 @@ def validate (db, source, asset_dest_quant_list, block_index):
     cursor = db.cursor()
     for t in asset_dest_quant_list:
         # Need to manually unpack the tuple to avoid errors on scenarios where no memo is specified
-        asset = util.resolve_subasset_longname(db, t[0]) if util.enable('mpma_validationfix_2323232') else t[0]
+        asset = util.resolve_subasset_longname(db, t[0]) if util.enabled('mpma_validationfix_2323232') else t[0]
         destination = t[1]
         quantity = t[2]
 
