@@ -276,21 +276,28 @@
     "minimum_version_major": 9,
     "minimum_version_minor": 5806,
     "minimum_version_revision": 5,
-    "block_index": 2323230,
+    "block_index": 2323232,
     "testnet_block_index": 1120000
   },
   "dont_credit_zero_dividend": {
     "minimum_version_major": 9,
     "minimum_version_minor": 5806,
     "minimum_version_revision": 5,
-    "block_index": 2323230,
+    "block_index": 2323232,
+    "testnet_block_index": 1120000
+  },
+  "mpma_validationfix_2323232": {
+    "minimum_version_major": 9,
+    "minimum_version_minor": 5808,
+    "minimum_version_revision": 2,
+    "block_index": 2323232,
     "testnet_block_index": 1120000
   },
   "non_fungible_assets": {
     "minimum_version_major": 9,
     "minimum_version_minor": 5807,
     "minimum_version_revision": 1,
-    "block_index": 2323230,
+    "block_index": 2323232,
     "testnet_block_index": 1120000
-  }
+  },
 }
