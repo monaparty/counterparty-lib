@@ -30,6 +30,8 @@ from jsonrpc import dispatcher
 from jsonrpc.exceptions import JSONRPCDispatchException
 import inspect
 from xmltodict import unparse as serialize_to_xml
+import marshal
+import bson
 
 from counterpartylib.lib import config
 from counterpartylib.lib import exceptions
@@ -64,11 +66,11 @@ API_TABLES = ['assetgroups',
               'bet_expirations', 'order_expirations', 'bet_match_expirations',
               'order_match_expirations', 'bet_match_resolutions', 'rps',
               'rpsresolves', 'rps_matches', 'rps_expirations', 'rps_match_expirations',
-              'mempool', 'sweeps', 'dispensers', 'dispenses']
+              'mempool', 'sweeps', 'dispensers', 'dispenses', 'triggers', 'asset_metadatas']
 
 API_TRANSACTIONS = ['bet', 'broadcast', 'btcpay', 'burn', 'cancel', 'destroy',
                     'dividend', 'issuance', 'order', 'send',
-                    'rps', 'rpsresolve', 'sweep', 'dispenser']
+                    'rps', 'rpsresolve', 'sweep', 'dispenser', 'trigger']
 
 COMMONS_ARGS = ['encoding', 'fee_per_kb', 'regular_dust_size',
                 'multisig_dust_size', 'op_return_value', 'pubkey',
@@ -283,6 +285,10 @@ def get_rows(db, table, filters=None, filterop='AND', order_by=None, order_dir=N
         return adjust_get_sends_results(query_result)
     elif table == 'sweeps':
         return adjust_get_sweeps_results(query_result)
+    elif table == 'triggers':
+        return adjust_triggers_payload_filters(query_result)
+    elif table == 'asset_metadatas':
+        return adjust_asset_metadatas_payload_filters(query_result)
     else:
         return query_result
 
@@ -298,6 +304,22 @@ def adjust_get_sends_memo_filters(filters):
                 filter_['value'] = bytes.fromhex(filter_['value'])
             except ValueError as e:
                 raise APIError("Invalid memo_hex value")
+
+def adjust_triggers_payload_filters(query_result):
+    """Convert payload to a hex string."""
+    for trigger_row in list(query_result):
+        if trigger_row['payload']:
+            trigger_row['payload'] = binascii.hexlify(trigger_row['payload']).decode('utf-8')
+    return query_result
+
+def adjust_asset_metadatas_payload_filters(query_result):
+    """Convert payload to a json string."""
+    for asset_metadata_row in list(query_result):
+        if asset_metadata_row['payload']:
+            asset_metadata_row['payload_json'] = json.dumps(marshal.loads(asset_metadata_row['payload']), ensure_ascii=False)
+            asset_metadata_row['payload_bson_hex'] = binascii.hexlify(bson.dumps({ asset_metadata_row['key']: marshal.loads(asset_metadata_row['payload'])})).decode('utf-8')
+            asset_metadata_row.pop('payload', None)
+    return query_result
 
 def adjust_get_sends_results(query_result):
     """Format the memo_hex field.  Try and decode the memo from a utf-8 uncoded string. Invalid utf-8 strings return an empty memo."""

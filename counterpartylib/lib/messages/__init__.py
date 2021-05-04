@@ -18,6 +18,7 @@
 # 80 rps
 # 81 rpsresolve
 # 110 destroy
+# 120 trigger
 #
 # Allocate each new type of message within the "logical" 10 number boundary
 # Only allocate a 10 number boundary if it makes sense

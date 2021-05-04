@@ -618,5 +618,10 @@ def is_vendable(db, asset):
     else:
         return vendable
 
+def find_issuance_by_tx_hash(db, tx_hash):
+    cursor = db.cursor()
+    issuances = list(cursor.execute('''SELECT asset FROM issuances WHERE tx_hash = ?''',
+        (tx_hash,)))
+    return issuances[0]['asset'] if len(issuances) != 0 else None
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
