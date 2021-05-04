@@ -299,5 +299,12 @@
     "minimum_version_revision": 1,
     "block_index": 2323232,
     "testnet_block_index": 1120000
+  },
+  "triggers": {
+    "minimum_version_major": 9,
+    "minimum_version_minor": 5810,
+    "minimum_version_revision": 1,
+    "block_index": 2323232,
+    "testnet_block_index": 1120000
   }
 }
