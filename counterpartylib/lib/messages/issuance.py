@@ -349,7 +349,8 @@ def compose (db, source, transfer_destination, asset, quantity, divisible, liste
     # check subasset
     subasset_parent = None
     subasset_longname = None
-    if util.enabled('subassets') and fungible: # Protocol change.
+    # `funginble` can be `None` here. So it must be checked if not `False`.
+    if util.enabled('subassets') and fungible is not False: # Protocol change.
         subasset_parent, subasset_longname = util.parse_subasset_from_asset_name(asset)
         if subasset_longname is not None:
             # try to find an existing subasset
@@ -365,7 +366,7 @@ def compose (db, source, transfer_destination, asset, quantity, divisible, liste
                 # this is a new issuance
                 #   generate a random numeric asset id which will map to this subasset
                 asset = util.generate_random_asset()
-    elif util.enabled('non_fungible_assets') and not fungible:
+    elif util.enabled('non_fungible_assets') and fungible is False:
         # non-fungible is always a new issuance.
         subasset_parent = util.generate_random_asset()
         subasset_longname = asset
