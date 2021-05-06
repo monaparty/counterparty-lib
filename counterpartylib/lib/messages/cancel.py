@@ -47,7 +47,6 @@ def validate (db, source, offer_hash):
     bets = list(cursor)
     cursor.execute('''SELECT * from rps WHERE tx_hash = ?''', (offer_hash,))
     rps = list(cursor)
-    cursor.close()
 
     offer_type = None
     if orders: offer_type = 'order'
@@ -125,7 +124,5 @@ def parse (db, tx, message):
     else:
         logger.warn("Not storing [cancel] tx [%s]: %s" % (tx['tx_hash'], status))
         logger.debug("Bindings: %s" % (json.dumps(bindings), ))
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -82,7 +82,6 @@ def reset_current_block_index(db):
     cursor = db.cursor()
     latest_block = list(cursor.execute('''SELECT * FROM blocks ORDER BY block_index DESC LIMIT 1'''))[0]
     util.CURRENT_BLOCK_INDEX = latest_block['block_index']
-    cursor.close()
 
     return util.CURRENT_BLOCK_INDEX
 
@@ -120,7 +119,6 @@ def restore_database(database_filename, dump_filename):
     cursor = db.cursor()
     with open(dump_filename, 'r') as sql_dump:
         cursor.execute(sql_dump.read())
-    cursor.close()
 
 def remove_database_files(database_filename):
     """Delete temporary db dumps."""
@@ -138,7 +136,6 @@ def insert_block(db, block_index, parse_block=True):
     cursor.execute('''INSERT INTO blocks (block_index, block_hash, block_time, ledger_hash, txlist_hash, previous_block_hash, difficulty)
                       VALUES (?,?,?,?,?,?,?)''', block)
     util.CURRENT_BLOCK_INDEX = block_index  # TODO: Correct?!
-    cursor.close()
 
     if parse_block:
         blocks.parse_block(db, block_index, block_time)
@@ -162,7 +159,6 @@ def create_next_block(db, block_index=None, parse_block=True):
     for index in range(last_block_index + 1, block_index + 1):
         inserted_block_index, block_hash, block_time = insert_block(db, index, parse_block=parse_block)
 
-    cursor.close()
     return inserted_block_index, block_hash, block_time
 
 
@@ -183,8 +179,6 @@ def insert_raw_transaction(raw_transaction, db):
         tx = list(cursor.execute('''SELECT * FROM transactions WHERE tx_index = ?''', (tx_index,)))[0]
     except exceptions.BTCOnlyError:
         pass
-
-    cursor.close()
 
     MOCK_UTXO_SET.add_raw_transaction(raw_transaction, tx_id=tx_hash, confirmations=1)
 
@@ -219,8 +213,6 @@ def insert_unconfirmed_raw_transaction(raw_transaction, db):
         'data': data,
         'supported': True
     }
-
-    cursor.close()
 
     MOCK_UTXO_SET.add_raw_transaction(raw_transaction, tx_id=tx_hash, confirmations=0)
 
@@ -265,7 +257,6 @@ def insert_transaction(transaction, db):
                       VALUES (?,?,?,?,?,?,?)''', block)
     keys = ",".join(transaction.keys())
     cursor.execute('''INSERT INTO transactions ({}) VALUES (?,?,?,?,?,?,?,?,?,?,?)'''.format(keys), tuple(transaction.values()))
-    cursor.close()
     util.CURRENT_BLOCK_INDEX = transaction['block_index']
 
 
@@ -284,8 +275,6 @@ def prefill_rawtransactions_db(db):
                 txid = output['txid']
                 tx = backend.deserialize(output['txhex'])
                 cursor.execute('INSERT INTO raw_transactions VALUES (?, ?, ?)', (txid, output['txhex'], output['confirmations']))
-    cursor.close()
-
 
 def save_rawtransaction(db, txid, tx_hex, confirmations=0):
     """Insert the raw transaction into the db."""
@@ -299,8 +288,6 @@ def save_rawtransaction(db, txid, tx_hex, confirmations=0):
         cursor.execute('''INSERT INTO raw_transactions VALUES (?, ?, ?)''', (txid, tx_hex, confirmations))
     except Exception as e: # TODO
         pass
-    cursor.close()
-
 
 def getrawtransaction(db, txid, verbose=False):
     """
@@ -315,7 +302,6 @@ def getrawtransaction(db, txid, verbose=False):
         txid = binascii.hexlify(txid).decode('ascii')
 
     tx_hex, confirmations = list(cursor.execute('''SELECT tx_hex, confirmations FROM raw_transactions WHERE tx_hash = ?''', (txid,)))[0]
-    cursor.close()
 
     if verbose:
         return mock_bitcoind_verbose_tx_output(tx_hex, txid, confirmations)
@@ -444,7 +430,7 @@ def search_raw_transactions(db, address, unconfirmed=False):
         else:
             return []
     finally:
-        cursor.close()
+        pass
 
 
 def initialise_db(db):
@@ -492,7 +478,6 @@ def run_scenario(scenario):
     dump = dump_database(db)
     log = logger_buff.getvalue()
 
-    db.close()
     check.CHECKPOINTS_TESTNET = checkpoints
     return dump, log, json.dumps(raw_transactions, indent=4)
 

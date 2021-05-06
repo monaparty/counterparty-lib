@@ -48,7 +48,6 @@ def validate (db, source, order_match_id, block_index):
     cursor.execute('''SELECT * FROM order_matches \
                       WHERE id = ?''', (order_match_id,))
     order_matches = cursor.fetchall()
-    cursor.close()
     if len(order_matches) == 0:
         problems.append('no such order match %s' % order_match_id)
         return None, None, None, None, order_match, problems
@@ -190,8 +189,5 @@ def parse (db, tx, message):
     else:
         logger.warn("Not storing [btcpay] tx [%s]: %s" % (tx['tx_hash'], status))
         logger.debug("Bindings: %s" % (json.dumps(bindings), ))
-
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -128,7 +128,6 @@ def get_connection(read_only=True, foreign_keys=True, integrity_check=True):
     db.setrowtrace(rowtracer)
     db.setexectrace(exectracer)
 
-    cursor.close()
     return db
 
 def version(db):

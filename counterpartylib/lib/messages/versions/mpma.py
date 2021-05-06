@@ -95,8 +95,6 @@ def validate (db, source, asset_dest_quant_list, block_index):
             elif not issuances[0]['reassignable'] and issuances[0]['issuer'] != source and issuances[0]['issuer'] != destination:
                 problems.append('{} is a non-reassignable asset'.format(asset))
 
-    cursor.close()
-
     return problems
 
 def compose (db, source, asset_dest_quant_list, memo, memo_is_hex):
@@ -116,8 +114,6 @@ def compose (db, source, asset_dest_quant_list, memo, memo_is_hex):
             raise exceptions.ComposeError('insufficient funds for {}'.format(asset))
 
     block_index = util.CURRENT_BLOCK_INDEX
-
-    cursor.close()
 
     problems = validate(db, source, asset_dest_quant_list, block_index)
     if problems: raise exceptions.ComposeError(problems)
@@ -210,7 +206,5 @@ def parse (db, tx, message):
 
     if status != 'valid':
         logger.warn("Not storing [mpma] tx [%s]: %s" % (tx['tx_hash'], status))
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

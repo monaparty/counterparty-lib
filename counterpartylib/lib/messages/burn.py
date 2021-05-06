@@ -67,7 +67,6 @@ def compose (db, source, quantity, overburn=False):
     if quantity > (1 * config.UNIT - already_burned) and not overburn:
         raise exceptions.ComposeError('1 {} may be burned per address'.format(config.BTC))
 
-    cursor.close()
     return (source, [(destination, quantity)], None)
 
 def parse (db, tx, MAINNET_BURNS, message=None):
@@ -152,7 +151,5 @@ def parse (db, tx, MAINNET_BURNS, message=None):
     else:
         logger.warn("Not storing [burn] tx [%s]: %s" % (tx['tx_hash'], status))
         logger.debug("Bindings: %s" % (json.dumps(bindings), ))
-
-    burn_parse_cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

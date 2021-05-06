@@ -92,7 +92,6 @@ def validate (db, source, timestamp, value, fee_fraction_int, text, block_index)
     # Check previous broadcast in this feed.
     cursor = db.cursor()
     broadcasts = list(cursor.execute('''SELECT * FROM broadcasts WHERE (status = ? AND source = ?) ORDER BY tx_index ASC''', ('valid', source)))
-    cursor.close()
     if broadcasts:
         last_broadcast = broadcasts[-1]
         if last_broadcast['locked']:
@@ -239,7 +238,6 @@ def parse (db, tx, message):
                            ('pending', tx['source']))
             for bet_match in list(cursor):
                 bet.cancel_bet_match(db, bet_match, 'dropped', tx['block_index'])
-        cursor.close()
         return
 
     # stop processing if broadcast is invalid for any reason
@@ -404,9 +402,5 @@ def parse (db, tx, message):
             sql='update bet_matches set status = :status where id = :bet_match_id'
             cursor.execute(sql, bindings)
             log.message(db, tx['block_index'], 'update', 'bet_matches', bindings)
-
-        broadcast_bet_match_cursor.close()
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

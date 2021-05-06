@@ -56,7 +56,6 @@ def validate (db, source, move, random, rps_match_id):
 
     cursor = db.cursor()
     rps_matches = list(cursor.execute('''SELECT * FROM rps_matches WHERE id = ?''', (rps_match_id,)))
-    cursor.close()
     if len(rps_matches) == 0:
         problems.append('no such rps match')
         return None, rps_match, problems
@@ -177,8 +176,6 @@ def parse (db, tx, message):
 
     sql = '''INSERT INTO rpsresolves VALUES (:tx_index, :tx_hash, :block_index, :source, :move, :random, :rps_match_id, :status)'''
     cursor.execute(sql, rpsresolves_bindings)
-
-    cursor.close()
 
 # https://en.wikipedia.org/wiki/Rock-paper-scissors#Additional_weapons:
 def resolve_game(db, resovlerps1, resovlerps2):

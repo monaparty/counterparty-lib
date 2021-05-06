@@ -85,7 +85,6 @@ def validate (db, source, destination, asset, quantity, memo_bytes, block_index)
             if result and util.active_options(result['options'], config.ADDRESS_OPTION_REQUIRE_MEMO):
                 if memo_bytes is None or (len(memo_bytes) == 0):
                     problems.append('destination requires memo')
-        cursor.close()
 
     if util.enabled('non_reassignable_assets') and asset != config.BTC and asset != config.XCP:
         cursor = db.cursor()
@@ -97,7 +96,6 @@ def validate (db, source, destination, asset, quantity, memo_bytes, block_index)
             problems.append('issuance not found (system error?)')
         elif not issuances[0]['reassignable'] and issuances[0]['issuer'] != source and issuances[0]['issuer'] != destination:
             problems.append('non-reassignable asset')
-        cursor.close()
 
     return problems
 
@@ -142,7 +140,6 @@ def compose (db, source, destination, asset, quantity, memo, memo_is_hex):
     data += struct.pack(FORMAT, asset_id, quantity, short_address_bytes)
     data += memo_bytes
 
-    cursor.close()
     # return an empty array as the second argument because we don't need to send BTC dust to the recipient
     return (source, [], data)
 
@@ -210,8 +207,5 @@ def parse (db, tx, message):
     else:
         logger.warn("Not storing [send] tx [%s]: %s" % (tx['tx_hash'], status))
         logger.debug("Bindings: %s" % (json.dumps(bindings), ))
-
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

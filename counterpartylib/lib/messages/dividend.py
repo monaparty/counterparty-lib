@@ -135,8 +135,6 @@ def validate (db, source, quantity_per_unit, asset, dividend_asset, block_index)
     if fee > config.MAX_INT or dividend_total > config.MAX_INT:
         problems.append('integer overflow')
 
-    cursor.close()
-
     return dividend_total, outputs, problems, fee
 
 def compose (db, source, quantity_per_unit, asset, dividend_asset):
@@ -218,7 +216,5 @@ def parse (db, tx, message):
     else:
         logger.warn("Not storing [dividend] tx [%s]: %s" % (tx['tx_hash'], status))
         logger.debug("Bindings: %s" % (json.dumps(bindings), ))
-
-    dividend_parse_cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -154,6 +154,4 @@ def parse (db, tx, message):
     if status == 'valid':
         util.debit(db, tx['source'], config.XCP, fee, action="trigger fee", event=tx['tx_hash'])
 
-    cursor.close()
-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
