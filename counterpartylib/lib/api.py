@@ -136,7 +136,6 @@ def db_query(db, statement, bindings=(), callback=None, **callback_args):
         results = None
     else:
         results = list(cursor.execute(statement, bindings))
-    cursor.close()
     return results
 
 def get_rows(db, table, filters=None, filterop='AND', order_by=None, order_dir=None, start_block=None, end_block=None,
@@ -603,7 +602,6 @@ class APIServer(threading.Thread):
             cursor = self.db.cursor()
             cursor.execute('select * from messages where block_index = ? order by message_index asc', (block_index,))
             messages = cursor.fetchall()
-            cursor.close()
             return messages
 
         @dispatcher.add_method
@@ -622,7 +620,6 @@ class APIServer(threading.Thread):
             cursor.execute('SELECT * FROM messages WHERE message_index IN (%s) ORDER BY message_index ASC'
                 % (','.join([str(x) for x in message_indexes]),))
             messages = cursor.fetchall()
-            cursor.close()
             return messages
 
         @dispatcher.add_method
@@ -674,7 +671,6 @@ class APIServer(threading.Thread):
                 # User‐created asset.
                 cursor = self.db.cursor()
                 issuances = list(cursor.execute('''SELECT * FROM issuances WHERE (status = ? AND asset = ?) ORDER BY block_index ASC''', ('valid', asset)))
-                cursor.close()
                 if not issuances:
                     continue #asset not found, most likely
                 else:
@@ -708,7 +704,6 @@ class APIServer(threading.Thread):
                 raise exceptions.DatabaseError('No blocks found.')
             else:
                 assert False
-            cursor.close()
             return block
 
         @dispatcher.add_method
@@ -751,7 +746,6 @@ class APIServer(threading.Thread):
                     block['_messages'].append(messages.popleft())
             #NOTE: if len(messages), then we're only returning the messages for the first set of blocks before the reorg
 
-            cursor.close()
             return blocks
 
         @dispatcher.add_method
@@ -770,7 +764,6 @@ class APIServer(threading.Thread):
                 blocks = list(cursor.execute('''SELECT * FROM blocks WHERE block_index = ?''', (util.CURRENT_BLOCK_INDEX, )))
                 assert len(blocks) == 1
                 last_block = blocks[0]
-                cursor.close()
             except:
                 last_block = None
 
@@ -816,7 +809,6 @@ class APIServer(threading.Thread):
                 count_list = cursor.fetchall()
                 assert len(count_list) == 1
                 counts[element] = count_list[0]['count']
-            cursor.close()
             return counts
 
         @dispatcher.add_method
@@ -828,7 +820,6 @@ class APIServer(threading.Thread):
                     names.append({'asset': row['asset'], 'asset_longname': row['asset_longname']})
             else:
                 names = [row['asset'] for row in cursor.execute("SELECT DISTINCT asset FROM issuances WHERE status = 'valid' ORDER BY asset ASC")]
-            cursor.close()
             return names
 
         @dispatcher.add_method
@@ -1085,7 +1076,6 @@ class APIServer(threading.Thread):
         self.is_ready = True
         app.run(host=config.RPC_HOST, port=config.RPC_PORT, threaded=True)
 
-        self.db.close()
         return
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -128,7 +128,6 @@ def last_message(db):
         last_message = messages[0]
     else:
         raise exceptions.DatabaseError('No messages found.')
-    cursor.close()
     return last_message
 
 def generate_asset_id(asset_name, block_index):
@@ -242,7 +241,6 @@ def resolve_subasset_longname(db, asset_name):
             cursor = db.cursor()
             cursor.execute('''SELECT asset_name FROM assets WHERE asset_longname = ?''', (subasset_longname,))
             assets = list(cursor)
-            cursor.close()
             if len(assets) == 1:
                 return assets[0]['asset_name']
 
@@ -420,7 +418,6 @@ def debit (db, address, asset, quantity, action=None, event=None):
     }
     sql='insert into debits values(:block_index, :address, :asset, :quantity, :action, :event)'
     debit_cursor.execute(sql, bindings)
-    debit_cursor.close()
 
     BLOCK_LEDGER.append('{}{}{}{}'.format(block_index, address, asset, quantity))
 
@@ -487,7 +484,6 @@ def credit (db, address, asset, quantity, action=None, event=None):
     sql='insert into credits values(:block_index, :address, :asset, :quantity, :action, :event)'
 
     credit_cursor.execute(sql, bindings)
-    credit_cursor.close()
 
     BLOCK_LEDGER.append('{}{}{}{}'.format(block_index, address, asset, quantity))
 
@@ -620,7 +616,6 @@ def holders(db, asset, exclude_empty_holders=False):
     for dispenser in list(cursor):
         holders.append({'address': dispenser['source'], 'address_quantity': dispenser['give_remaining'], 'escrow': None})
 
-    cursor.close()
     return holders
 
 def xcp_created (db):
@@ -629,7 +624,6 @@ def xcp_created (db):
     cursor.execute('''SELECT SUM(earned) AS total FROM burns \
                       WHERE (status = ?)''', ('valid',))
     total = list(cursor)[0]['total'] or 0
-    cursor.close()
     return total
 
 def xcp_destroyed (db):
@@ -651,7 +645,6 @@ def xcp_destroyed (db):
     cursor.execute('''SELECT SUM(fee_paid) AS total FROM sweeps\
                       WHERE status = ?''', ('valid',))
     sweeps_fee_total = list(cursor)[0]['total'] or 0
-    cursor.close()
     return destroyed_total + issuance_fee_total + dividend_fee_total + sweeps_fee_total
 
 def xcp_supply (db):
@@ -670,7 +663,6 @@ def creations (db):
         created = issuance['created']
         creations[asset] = created
 
-    cursor.close()
     return creations
 
 def destructions (db):
@@ -685,7 +677,6 @@ def destructions (db):
         destroyed = destruction['destroyed']
         destructions[asset] = destroyed
 
-    cursor.close()
     return destructions
 
 def asset_supply (db, asset):
@@ -760,7 +751,6 @@ def get_balance (db, address, asset):
     """Get balance of contract or address."""
     cursor = db.cursor()
     balances = list(cursor.execute('''SELECT * FROM balances WHERE (address = ? AND asset = ?)''', (address, asset)))
-    cursor.close()
     if not balances: return 0
     else: return balances[0]['quantity']
 

@@ -140,7 +140,6 @@ def parse_tx(db, tx):
                                         (False, tx['tx_hash']))
                 if tx['block_index'] != config.MEMPOOL_BLOCK_INDEX:
                     logger.info('Unsupported transaction: hash {}; data {}'.format(tx['tx_hash'], tx['data']))
-                cursor.close()
                 return False
 
             # NOTE: for debugging (check asset conservation after every `N` transactions).
@@ -151,7 +150,7 @@ def parse_tx(db, tx):
     except Exception as e:
         raise exceptions.ParseTransactionError("%s" % e)
     finally:
-        cursor.close()
+        pass
 
 
 def parse_block(db, block_index, block_time,
@@ -188,7 +187,6 @@ def parse_block(db, block_index, block_time,
     else:
         undolog_cursor.execute('''INSERT OR REPLACE INTO undolog_block(block_index, first_undo_index)
             VALUES(?,?)''', (block_index, 1,))
-    undolog_cursor.close()
 
     # Expire orders, bets and rps.
     order.expire(db, block_index)
@@ -211,8 +209,6 @@ def parse_block(db, block_index, block_time,
             logger.warn('ParseTransactionError for tx %s: %s' % (tx['tx_hash'], e))
             raise e
             #pass
-
-    cursor.close()
 
     # Calculate consensus hashes.
     new_txlist_hash, found_txlist_hash = check.consensus_hash(db, 'txlist_hash', previous_txlist_hash, txlist)
@@ -467,8 +463,6 @@ def initialise(db):
                       bindings TEXT,
                       timestamp INTEGER)
                   ''')
-
-    cursor.close()
 
 def get_tx_info(tx_hex, block_parser=None, block_index=None):
     """Get the transaction info. Returns normalized None data for DecodeError and BTCOnlyError."""
@@ -947,8 +941,6 @@ def reinitialise(db, block_index=None):
         logger.info("Testnet/regtest full reparse detected: Clearing all consensus hashes before performing reparse.")
         cursor.execute('''UPDATE blocks SET ledger_hash = NULL, txlist_hash = NULL, messages_hash = NULL''')
 
-    cursor.close()
-
 def reparse(db, block_index=None, quiet=False):
     """Reparse all transactions (atomically). If block_index is set, rollback
     to the end of that block.
@@ -1005,7 +997,6 @@ def reparse(db, block_index=None, quiet=False):
             undolog_cursor.execute('''DELETE FROM undolog WHERE undo_index >= ?''', (undo_indexes[undo_start_block_index],))
             undolog_cursor.execute('''DELETE FROM undolog_block WHERE block_index >= ?''', (undo_start_block_index,))
 
-        undolog_cursor.close()
         return True
 
     if block_index:
@@ -1063,7 +1054,6 @@ def reparse(db, block_index=None, quiet=False):
         # Update database version number.
         database.update_version(db)
 
-    cursor.close()
     reparse_end = time.time()
     logger.info("Reparse took {:.3f} minutes.".format((reparse_end - reparse_start) / 60.0))
 
@@ -1130,7 +1120,6 @@ def list_tx(db, block_hash, block_index, block_time, tx_hash, tx_index, tx_hex=N
                              fee,
                              data)
                       )
-        cursor.close()
         return tx_index + 1
     else:
         logger.getChild('list_tx.skip').debug('Skipping transaction: {}'.format(tx_hash))
@@ -1243,7 +1232,6 @@ def kickstart(db, bitcoind_dir):
     # Parse all transactions in database.
     reparse(db)
 
-    cursor.close()
     logger.info('Total duration: {:.3f}s'.format(time.time() - start_time_total))
 
 def last_db_index(db):
@@ -1266,7 +1254,6 @@ def get_next_tx_index(db):
         tx_index = txes[0]['tx_index'] + 1
     else:
         tx_index = 0
-    cursor.close()
     return tx_index
 
 
@@ -1541,7 +1528,5 @@ def follow(db):
             # Wait
             db.wal_checkpoint(mode=apsw.SQLITE_CHECKPOINT_PASSIVE)
             time.sleep(sleep_time)
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

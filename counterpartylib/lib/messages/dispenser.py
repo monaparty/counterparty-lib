@@ -133,7 +133,6 @@ def validate (db, source, asset_, give_quantity, escrow_quantity, mainchainrate,
             if asset_id == 0:
                 problems.append('cannot dispense %s' % asset_) # How can we test this on a test vector?
 
-    cursor.close()
     if len(problems) > 0:
         return None, problems
     else:
@@ -236,8 +235,6 @@ def parse (db, tx, message):
         else:
             status = 'invalid: status must be one of OPEN or CLOSE'
 
-    cursor.close()
-
 def is_dispensable(db, address, amount):
     cursor = db.cursor()
     cursor.execute('SELECT count(*) as cnt FROM dispensers WHERE source=:source AND status=:status AND satoshirate<=:amount', {
@@ -246,7 +243,6 @@ def is_dispensable(db, address, amount):
         'status': STATUS_OPEN
     })
     dispensers = cursor.fetchall()
-    cursor.close()
     return len(dispensers) > 0 and dispensers[0]['cnt'] > 0
 
 def is_opened(db, asset):
@@ -312,5 +308,3 @@ def dispense(db, tx):
 
     for log in dispense_logs:
         cursor.execute('INSERT INTO DISPENSES VALUES (:tx_index, :tx_hash, :block_index, :source, :destination,  :asset, :must_give, :remaining, :actually_given, :satoshirate, :dispenser_tx_hash)', log)
-
-    cursor.close()

@@ -186,7 +186,6 @@ def validate (db, source, destination, asset, quantity, divisible, listed, reass
                       WHERE (status = ? AND asset = ?)
                       ORDER BY tx_index ASC''', ('valid', asset))
     issuances = cursor.fetchall()
-    cursor.close()
     reissued_asset_longname = None
     if issuances:
         reissuance = True
@@ -248,8 +247,6 @@ def validate (db, source, destination, asset, quantity, divisible, listed, reass
         else:
             problems += assetgroup.validate(db, subasset_longname, source)
 
-        cursor.close()
-
     if subasset_longname is not None and not reissuance:
         if fungible:
             # validate subasset issuance is not a duplicate
@@ -274,7 +271,6 @@ def validate (db, source, destination, asset, quantity, divisible, listed, reass
             cursor.execute('''SELECT * FROM balances
                               WHERE (address = ? AND asset = ?)''', (source, config.XCP))
             balances = cursor.fetchall()
-            cursor.close()
             if util.enabled('numeric_asset_names'):  # Protocol change.
                 if subasset_longname is not None:
                     if util.enabled('subassets') and fungible: # Protocol change.
@@ -344,7 +340,6 @@ def compose (db, source, transfer_destination, asset, quantity, divisible, liste
         callable_ = False
         call_date = 0
         call_price = 0.0
-    cursor.close()
 
     # check subasset
     subasset_parent = None
@@ -358,7 +353,6 @@ def compose (db, source, transfer_destination, asset, quantity, divisible, liste
             sa_cursor.execute('''SELECT * FROM assets
                               WHERE (asset_longname = ?)''', (subasset_longname,))
             assets = sa_cursor.fetchall()
-            sa_cursor.close()
             if len(assets) > 0:
                 # this is a reissuance
                 asset = assets[0]['asset_name']
@@ -546,7 +540,6 @@ def parse (db, tx, message, message_type_id):
             issuances = list(cursor.execute('''SELECT * FROM issuances
                                                WHERE (status = ? AND asset = ?)
                                                ORDER BY tx_index ASC''', ('valid', asset)))
-            cursor.close()
             description = issuances[-1]['description']  # Use last description. (Assume previous issuance exists because tx is valid.)
             timestamp, value_int, fee_fraction_int = None, None, None
 
@@ -600,9 +593,6 @@ def parse (db, tx, message, message_type_id):
     if status == 'valid' and quantity:
         util.credit(db, tx['source'], asset, quantity, action="issuance", event=tx['tx_hash'])
 
-
-    issuance_parse_cursor.close()
-
 def is_vendable(db, asset):
     if asset == config.XCP:
         return True # Always vendable.
@@ -612,7 +602,6 @@ def is_vendable(db, asset):
     issuances = list(cursor.execute('''SELECT vendable, reassignable, listed FROM issuances
                                                WHERE (status = ? AND asset = ?)
                                                ORDER BY tx_index DESC LIMIT 1''', ('valid', asset)))
-    cursor.close()
     if (len(issuances) <= 0):
         return False;
 

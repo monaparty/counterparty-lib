@@ -151,8 +151,6 @@ def cancel_rps (db, rps, status, block_index):
 
     util.credit(db, rps['source'], config.XCP, rps['wager'], action='recredit wager', event=rps['tx_hash'])
 
-    cursor.close()
-
 def update_rps_match_status (db, rps_match, status, block_index):
     cursor = db.cursor()
 
@@ -177,8 +175,6 @@ def update_rps_match_status (db, rps_match, status, block_index):
     sql='UPDATE rps_matches SET status = :status WHERE id = :rps_match_id'
     cursor.execute(sql, bindings)
     log.message(db, block_index, 'update', 'rps_matches', bindings)
-
-    cursor.close()
 
 def validate (db, source, possible_moves, wager, move_random_hash, expiration, block_index):
     problems = []
@@ -280,15 +276,12 @@ def parse(db, tx, message):
     if status == 'open':
         match(db, tx, tx['block_index'])
 
-    rps_parse_cursor.close()
-
 def match (db, tx, block_index):
     cursor = db.cursor()
 
     # Get rps in question.
     rps = list(cursor.execute('''SELECT * FROM rps WHERE tx_index = ? AND status = ?''', (tx['tx_index'], 'open')))
     if not rps:
-        cursor.close()
         return
     else:
         assert len(rps) == 1
@@ -351,8 +344,6 @@ def match (db, tx, block_index):
                                                  :match_expire_index, :status)'''
         cursor.execute(sql, bindings)
 
-    cursor.close()
-
 def expire (db, block_index):
     cursor = db.cursor()
 
@@ -405,8 +396,5 @@ def expire (db, block_index):
                 util.debit(db, rps['source'], config.XCP, rps['wager'], action='reopen RPS after matching expiration', event=rps_match['id'])
                 # Rematch
                 match(db, {'tx_index': rps['tx_index']}, block_index)
-
-    cursor.close()
-
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

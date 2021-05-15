@@ -210,15 +210,12 @@ def cancel_bet_match (db, bet_match, status, block_index):
     cursor.execute(sql, bindings)
     log.message(db, block_index, 'update', 'bet_matches', bindings)
 
-    cursor.close()
-
 
 def get_fee_fraction (db, feed_address):
     '''Get fee fraction from last broadcast from the feed_address address.
     '''
     cursor = db.cursor()
     broadcasts = list(cursor.execute('''SELECT * FROM broadcasts WHERE (status = ? AND source = ?) ORDER BY tx_index ASC''', ('valid', feed_address)))
-    cursor.close()
     if broadcasts:
         last_broadcast = broadcasts[-1]
         fee_fraction_int = last_broadcast['fee_fraction_int']
@@ -241,7 +238,6 @@ def validate (db, source, feed_address, bet_type, deadline, wager_quantity,
     # Look at feed to be bet on.
     cursor = db.cursor()
     broadcasts = list(cursor.execute('''SELECT * FROM broadcasts WHERE (status = ? AND source = ?) ORDER BY tx_index ASC''', ('valid', feed_address)))
-    cursor.close()
     if not broadcasts:
         problems.append('feed doesn’t exist')
     elif not broadcasts[-1]['text']:
@@ -386,8 +382,6 @@ def parse (db, tx, message):
     if status == 'open' and tx['block_index'] != config.MEMPOOL_BLOCK_INDEX:
         match(db, tx)
 
-    bet_parse_cursor.close()
-
 def match (db, tx):
 
     cursor = db.cursor()
@@ -396,7 +390,6 @@ def match (db, tx):
     bets = list(cursor.execute('''SELECT * FROM bets\
                                   WHERE (tx_index = ? AND status = ?)''', (tx['tx_index'], 'open')))
     if not bets:
-        cursor.close()
         return
     else:
         assert len(bets) == 1
@@ -551,8 +544,6 @@ def match (db, tx):
             }
             sql='insert into bet_matches values(:id, :tx0_index, :tx0_hash, :tx0_address, :tx1_index, :tx1_hash, :tx1_address, :tx0_bet_type, :tx1_bet_type, :feed_address, :initial_value, :deadline, :target_value, :leverage, :forward_quantity, :backward_quantity, :tx0_block_index, :tx1_block_index, :block_index, :tx0_expiration, :tx1_expiration, :match_expire_index, :fee_fraction_int, :status)'
             cursor.execute(sql, bindings)
-
-    cursor.close()
     return
 
 def expire (db, block_index, block_time):
@@ -589,7 +580,5 @@ def expire (db, block_index, block_time):
         }
         sql='insert into bet_match_expirations values(:bet_match_id, :tx0_address, :tx1_address, :block_index)'
         cursor.execute(sql, bindings)
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

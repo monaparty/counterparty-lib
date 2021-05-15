@@ -186,9 +186,6 @@ def message(db, block_index, command, category, bindings, tx_hash=None):
     if block_index != config.MEMPOOL_BLOCK_INDEX:
         log(db, command, category, bindings)
 
-    cursor.close()
-
-
 def log (db, command, category, bindings):
 
     cursor = db.cursor()
@@ -351,7 +348,5 @@ def log (db, command, category, bindings):
                 logger.info('Dispenser: {} opened a dispenser for asset {} with {} balance, giving {} {} for each {} {}'.format(bindings['source'], bindings['asset'], bindings['escrow_quantity'], bindings['give_quantity'], bindings['asset'], bindings['satoshirate'], config.BTC))
             elif bindings['status'] == 10:
                 logger.info('Dispenser: {} closed a dispenser for asset {}'.format(bindings['source'], bindings['asset']))
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

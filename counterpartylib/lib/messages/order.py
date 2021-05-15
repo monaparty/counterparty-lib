@@ -168,7 +168,6 @@ def exact_penalty (db, address, block_index, order_match_id):
         for bad_order_match in bad_order_matches:
             cancel_order_match(db, bad_order_match, 'expired', block_index)
 
-    cursor.close()
     return
 
 
@@ -198,8 +197,6 @@ def cancel_order (db, order, status, block_index):
         sql='insert into order_expirations values(:order_index, :order_hash, :source, :block_index)'
         cursor.execute(sql, bindings)
 
-    cursor.close()
-
 def cancel_order_match (db, order_match, status, block_index):
     '''The only cancelling is an expiration.
     '''
@@ -212,7 +209,6 @@ def cancel_order_match (db, order_match, status, block_index):
                                                WHERE (id = ? AND status = ?)''',
                                             (order_match['id'], 'expired')))
         if order_matches:
-            cursor.close()
             return
 
     # Update status of order match.
@@ -322,8 +318,6 @@ def cancel_order_match (db, order_match, status, block_index):
         sql='insert into order_match_expirations values(:order_match_id, :tx0_address, :tx1_address, :block_index)'
         cursor.execute(sql, bindings)
 
-    cursor.close()
-
 
 def validate (db, source, give_asset, give_quantity, get_asset, get_quantity, expiration, fee_required, block_index):
     problems = []
@@ -382,8 +376,8 @@ def validate (db, source, give_asset, give_quantity, get_asset, get_quantity, ex
     if expiration > config.MAX_EXPIRATION:
         problems.append('expiration overflow')
 
-    cursor.close()
     return problems
+
 
 def compose (db, source, give_asset, give_quantity, get_asset, get_quantity, expiration, fee_required):
     cursor = db.cursor()
@@ -406,8 +400,8 @@ def compose (db, source, give_asset, give_quantity, get_asset, get_quantity, exp
     data = message_type.pack(ID)
     data += struct.pack(FORMAT, give_id, give_quantity, get_id, get_quantity,
                         expiration, fee_required)
-    cursor.close()
     return (source, [], data)
+
 
 def parse (db, tx, message):
     order_parse_cursor = db.cursor()
@@ -493,7 +487,6 @@ def parse (db, tx, message):
     if status == 'open' and tx['block_index'] != config.MEMPOOL_BLOCK_INDEX:
         match(db, tx)
 
-    order_parse_cursor.close()
 
 def match (db, tx, block_index=None):
 
@@ -503,7 +496,6 @@ def match (db, tx, block_index=None):
     orders = list(cursor.execute('''SELECT * FROM orders\
                                     WHERE (tx_index = ? AND status = ?)''', (tx['tx_index'], 'open')))
     if not orders:
-        cursor.close()
         return
     else:
         assert len(orders) == 1
@@ -743,7 +735,6 @@ def match (db, tx, block_index=None):
             if tx1_status == 'filled':
                 break
 
-    cursor.close()
     return
 
 def expire (db, block_index):
@@ -794,7 +785,5 @@ def expire (db, block_index):
             cursor.execute('''SELECT * FROM transactions\
                               WHERE tx_hash = ?''', (order_match['tx1_hash'],))
             match(db, list(cursor)[0], block_index)
-
-    cursor.close()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

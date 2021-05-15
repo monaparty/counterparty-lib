@@ -71,8 +71,6 @@ def validate (db, source, destination, flags, memo_bytes, block_index):
     elif result[0]['quantity'] < ANTISPAM_FEE:
         problems.append('insufficient XMP balance for sweep. Need %s XMP for antispam fee' % ANTISPAM_FEE_FLOAT)
 
-    cursor.close()
-
     if flags > FLAGS_ALL:
         problems.append('invalid flags %i' % flags)
     elif not(flags & (FLAG_BALANCES | FLAG_OWNERSHIP)):
@@ -223,5 +221,3 @@ def parse (db, tx, message):
         }
         sql = 'insert into sweeps values(:tx_index, :tx_hash, :block_index, :source, :destination, :flags, :status, :memo, :fee_paid)'
         cursor.execute(sql, bindings)
-
-    cursor.close()

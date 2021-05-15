@@ -262,7 +262,6 @@ class MockUTXOSet(object):
     def increment_confirmations(self):
         cursor = self.rawtransactions_db.cursor()
         cursor.execute('''UPDATE raw_transactions SET confirmations = confirmations + 1''')
-        cursor.close()
 
         for utxo in self.txouts:
             utxo['confirmations'] = (utxo['confirmations'] or 0) + 1
