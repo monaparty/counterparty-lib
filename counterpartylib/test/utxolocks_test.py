@@ -28,8 +28,8 @@ def test_utxolocks(server_db):
     transaction.initialise()  # reset UTXO_LOCKS
 
     """it shouldn't use the same UTXO"""
-    tx1hex = construct_tx(server_db, "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns")
-    tx2hex = construct_tx(server_db, "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns")
+    tx1hex = construct_tx(server_db, "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C")
+    tx2hex = construct_tx(server_db, "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C")
 
     tx1f = BytesIO(binascii.unhexlify(tx1hex))
     tx1 = bitcoin.core.CTransaction.stream_deserialize(tx1f)
@@ -51,11 +51,11 @@ def test_utxolocks_custom_input(server_db):
         'vout': 0,
         'confirmations': 74,
         'scriptPubKey': '76a9148d6ae8a3b381663118b4e1eff4cfc7d0954dd6ec88ac',
-        'address': 'mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns'
+        'address': 'n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C'
     }]
 
-    tx1hex = construct_tx(server_db, "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", custom_inputs=custom_inputs)
-    tx2hex = construct_tx(server_db, "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", custom_inputs=custom_inputs)
+    tx1hex = construct_tx(server_db, "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", custom_inputs=custom_inputs)
+    tx2hex = construct_tx(server_db, "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", custom_inputs=custom_inputs)
 
     tx1f = BytesIO(binascii.unhexlify(tx1hex))
     tx1 = bitcoin.core.CTransaction.stream_deserialize(tx1f)
@@ -70,8 +70,8 @@ def test_disable_utxolocks(server_db):
     transaction.initialise()  # reset UTXO_LOCKS
 
     """with `disable_utxo_locks=True` it should use the same UTXO"""
-    tx1hex = construct_tx(server_db, "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", disable_utxo_locks=True)
-    tx2hex = construct_tx(server_db, "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", "mtQheFaSfWELRB2MyMBaiWjdDm6ux9Ezns", disable_utxo_locks=True)
+    tx1hex = construct_tx(server_db, "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", disable_utxo_locks=True)
+    tx2hex = construct_tx(server_db, "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", "n2T96WQMsY9jx8dPzczaEub9BGkpGXXs4C", disable_utxo_locks=True)
 
     tx1f = BytesIO(binascii.unhexlify(tx1hex))
     tx1 = bitcoin.core.CTransaction.stream_deserialize(tx1f)
