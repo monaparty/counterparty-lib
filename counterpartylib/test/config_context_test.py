@@ -14,17 +14,17 @@ FIXTURE_DB = tempfile.gettempdir() + '/fixtures.parseblock_unittest_fixture.db'
 
 
 def test_config_context(cp_server):
-    assert config.BTC_NAME == "Bitcoin"
+    assert config.BTC_NAME == "Monacoin"
 
-    with util_test.ConfigContext(BTC_NAME="Bitcoin Testing"):
-        assert config.BTC_NAME == "Bitcoin Testing"
+    with util_test.ConfigContext(BTC_NAME="Monacoin Testing"):
+        assert config.BTC_NAME == "Monacoin Testing"
 
-        with util_test.ConfigContext(BTC_NAME="Bitcoin Testing Testing"):
-            assert config.BTC_NAME == "Bitcoin Testing Testing"
+        with util_test.ConfigContext(BTC_NAME="Monacoin Testing Testing"):
+            assert config.BTC_NAME == "Monacoin Testing Testing"
 
-        assert config.BTC_NAME == "Bitcoin Testing"
+        assert config.BTC_NAME == "Monacoin Testing"
 
-    assert config.BTC_NAME == "Bitcoin"
+    assert config.BTC_NAME == "Monacoin"
 
 
 def test_mock_protocol_changes(cp_server):
